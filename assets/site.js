@@ -1,32 +1,40 @@
 "use strict";
-/* Publication entries are embedded in index.html at build time.
-   Search is progressively enhanced; entries remain visible without JavaScript. */
+/* All publication records, including Under Review, are in static HTML.
+ * Search filters those records without requiring an external request. */
 (() => {
   const input = document.getElementById("publication-search");
   const clear = document.getElementById("clear-search");
-  const count = document.getElementById("publication-count");
-  const groups = Array.from(document.querySelectorAll(".year-group"));
-  if (!input || !clear || !count || !groups.length) return;
-  const articles = Array.from(document.querySelectorAll(".publication"));
-  const total = articles.length;
+  const pubCount = document.getElementById("publication-count");
+  const reviewCount = document.getElementById("under-review-count");
+  const pubHeading = document.getElementById("published-heading-row");
+  const reviewHeading = document.getElementById("under-review-heading-row");
+  const pubList = document.getElementById("publication-list");
+  const reviewList = document.getElementById("under-review-list");
+  if (!input || !clear || !pubCount || !reviewCount || !pubList || !reviewList) return;
+  const published = Array.from(pubList.querySelectorAll(".publication"));
+  const reviewed = Array.from(reviewList.querySelectorAll(".publication"));
+  const all = [...reviewed, ...published];
   const apply = () => {
     const query = input.value.trim().toLocaleLowerCase();
-    let visible = 0;
-    for (const article of articles) {
-      const match = !query || article.textContent.toLocaleLowerCase().includes(query);
-      article.hidden = !match;
-      if (match) visible++;
+    for (const article of all) {
+      article.hidden = !!query && !article.textContent.toLocaleLowerCase().includes(query);
     }
-    for (const group of groups) {
-      group.hidden = !Array.from(group.querySelectorAll(".publication")).some(item => !item.hidden);
+    for (const group of pubList.querySelectorAll(".year-group")) {
+      group.hidden = !Array.from(group.querySelectorAll(".publication")).some(p => !p.hidden);
     }
-    count.textContent = query ? `${visible} of ${total} works` : `${total} works`;
-    clear.hidden = !query;
+    const pubsVisible = published.filter(p => !p.hidden).length;
+    const reviewsVisible = reviewed.filter(p => !p.hidden).length;
+    const filtering = !!query;
+    pubCount.textContent = filtering ? `${pubsVisible} of ${published.length} works` : `${published.length} works`;
+    reviewCount.textContent = filtering ? `${reviewsVisible} of ${reviewed.length} manuscripts` : `${reviewed.length} manuscripts`;
+    clear.hidden = !filtering;
+    if (reviewHeading) reviewHeading.hidden = filtering && reviewsVisible === 0;
+    if (pubHeading) pubHeading.hidden = filtering && pubsVisible === 0;
+    reviewList.hidden = filtering && reviewsVisible === 0;
+    pubList.hidden = filtering && pubsVisible === 0;
+    const empty = document.getElementById("search-empty-state");
+    if (empty) empty.hidden = !filtering || pubsVisible + reviewsVisible > 0;
   };
   input.addEventListener("input", apply);
-  clear.addEventListener("click", () => {
-    input.value = "";
-    apply();
-    input.focus();
-  });
+  clear.addEventListener("click", () => { input.value = ""; apply(); input.focus(); });
 })();
