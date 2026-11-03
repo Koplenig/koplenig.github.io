@@ -27,12 +27,6 @@ button, input { font: inherit; }
 .portrait { grid-column: 2; grid-row: 1 / span 2; align-self: start; margin: 30px 0 0; width: 238px; max-width: 100%; height: auto; overflow: visible; border-radius: 4px; background: #e6e1d7; box-shadow: 0 1px 10px rgba(0,0,0,.055); }
 .portrait img { display: block; width: 100%; height: auto; max-height: none; object-fit: contain; object-position: center; aspect-ratio: auto; }
 .bibliography { padding: 30px 0 80px; }
-.under-review-heading { margin-bottom: 20px; }
-#under-review-list { border-top: 1px solid var(--line); padding-top: 24px; }
-.under-review-group .publication { padding-bottom: 23px; }
-.under-review-group .publication + .publication { padding-top: 23px; }
-.published-heading { padding-top: 30px; margin-top: 13px; border-top: 1px solid var(--line); margin-bottom: 26px; }
-#publication-list .year-group:first-child { margin-top: 0; }
 
 .section-title-row { display: flex; align-items: baseline; flex-wrap: wrap; gap: 12px 24px; }
 h2 { margin: 0; font-size: 31px; font-weight: 620; letter-spacing: -.75px; line-height: 1.25; }
@@ -41,9 +35,10 @@ h2 { margin: 0; font-size: 31px; font-weight: 620; letter-spacing: -.75px; line-
 .tools input { width: min(420px,100%); padding: 10px 13px; border: 1px solid #cdd5cf; border-radius: 4px; background: #fff; color: var(--ink); font-size: 14px; }
 .tools input::placeholder { color: #87918b; }
 .tools button { background: transparent; color: var(--accent); border: 0; padding: 6px 0; font-size: 13px; cursor: pointer; text-decoration: underline; }
-.year-group { display: grid; grid-template-columns: 80px minmax(0,1fr); border-top: 1px solid var(--line); padding: 25px 0 0; gap: 26px; }
+.year-group { display: grid; grid-template-columns: 140px minmax(0,1fr); border-top: 1px solid var(--line); padding: 25px 0 0; gap: 22px; }
 .year-group + .year-group { margin-top: 14px; }
 .year-group h3 { margin: 0; font-size: 22px; font-weight: 600; color: #3f5d4d; line-height: 1.4; }
+.review-year-group h3 { font-size: 20px; white-space: nowrap; }
 .publication { padding: 0 0 26px; }
 .publication + .publication { padding-top: 24px; border-top: 1px solid #ebebe6; }
 .pub-authors { font-size: 14px; line-height: 1.5; margin: 0 0 3px; color: #4f5a53; }

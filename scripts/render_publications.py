@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render a browser-independent academic bibliography from the manually edited CSV."""
+"""Render the manually maintained bibliography into readable, searchable static HTML."""
 from __future__ import annotations
 
 import csv
@@ -12,11 +12,8 @@ from urllib.parse import urlsplit
 ROOT = Path(__file__).resolve().parents[1]
 CSV_PATH = ROOT / "data/publications_manual.csv"
 INDEX_PATH = ROOT / "index.html"
-
-REVIEW_START = "<!-- BEGIN_GENERATED_UNDER_REVIEW -->"
-REVIEW_END = "<!-- END_GENERATED_UNDER_REVIEW -->"
-PUBLISHED_START = "<!-- BEGIN_GENERATED_PUBLICATIONS -->"
-PUBLISHED_END = "<!-- END_GENERATED_PUBLICATIONS -->"
+START = "<!-- BEGIN_GENERATED_PUBLICATIONS -->"
+END = "<!-- END_GENERATED_PUBLICATIONS -->"
 
 
 def html_link(label: str, href: str) -> str:
@@ -65,20 +62,23 @@ def publication_html(p: dict) -> str:
     )
 
 
-def render_review(rows: list[dict]) -> str:
-    reviewed = [p for p in rows if p.get("status", "").strip() == "under_review"]
-    if not reviewed:
-        return ""
-    works = "\n".join(publication_html(p) for p in reviewed)
-    return '<div class="under-review-group">' + works + '</div>'
-
-
-def render_published(rows: list[dict]) -> str:
+def render(rows: list[dict]) -> str:
+    under_review = [p for p in rows if p.get("status", "").strip() == "under_review"]
     published = [p for p in rows if p.get("status", "").strip() != "under_review"]
+    sections = []
+
+    # Under Review is a year-like group, directly below the Publications heading.
+    if under_review:
+        works = "\n".join(publication_html(p) for p in under_review)
+        sections.append(
+            '<section class="year-group review-year-group" aria-label="Under Review">'
+            '<h3>Under Review</h3>'
+            f'<div class="year-publications">{works}</div></section>'
+        )
+
     years: dict[str, list[dict]] = {}
     for p in published:
         years.setdefault(p["year"], []).append(p)
-    sections = []
     for year in sorted(years, key=int, reverse=True):
         works = "\n".join(publication_html(p) for p in years[year])
         sections.append(
@@ -88,38 +88,24 @@ def render_published(rows: list[dict]) -> str:
     return "\n".join(sections)
 
 
-def replace_generated(html: str, start: str, end: str, content: str) -> str:
-    if html.count(start) != 1 or html.count(end) != 1:
-        raise ValueError(f"Publication HTML template markers missing or duplicated: {start}")
-    prefix, remainder = html.split(start, 1)
-    _, suffix = remainder.split(end, 1)
-    return prefix + start + "\n" + content + "\n" + end + suffix
-
-
 def build(output_dir: Path) -> None:
     with CSV_PATH.open(encoding="utf-8-sig", newline="") as f:
         rows = list(csv.DictReader(f))
     if not rows:
-        raise ValueError("CSV has no publications")
-    reviewed = [p for p in rows if p.get("status", "").strip() == "under_review"]
-    published = [p for p in rows if p.get("status", "").strip() != "under_review"]
-
+        raise ValueError("Publication CSV has no entries")
+    if any(key not in rows[0] for key in ("year", "title", "authors", "status")):
+        raise ValueError("Publication CSV is missing required fields")
     html = INDEX_PATH.read_text(encoding="utf-8")
-    html = replace_generated(html, REVIEW_START, REVIEW_END, render_review(rows))
-    html = replace_generated(html, PUBLISHED_START, PUBLISHED_END, render_published(rows))
+    if html.count(START) != 1 or html.count(END) != 1:
+        raise ValueError("Publication HTML markers are missing or duplicated")
 
-    counts = [
-        ("under-review-count", f"{len(reviewed)} manuscripts"),
-        ("publication-count", f"{len(published)} works"),
-    ]
-    for element_id, content in counts:
-        pattern = r'(<span class="publication-count" id="' + element_id + r'" aria-live="polite">).*?(</span>)'
-        html, replacements = re.subn(
-            pattern, lambda match: match.group(1) + content + match.group(2),
-            html, count=1, flags=re.S,
-        )
-        if replacements != 1:
-            raise ValueError(f"Missing count element: {element_id}")
+    prefix, remainder = html.split(START, 1)
+    _, suffix = remainder.split(END, 1)
+    html = prefix + START + "\n" + render(rows) + "\n" + END + suffix
+    count_pattern = r'(<span class="publication-count" id="publication-count" aria-live="polite">).*?(</span>)'
+    html, n = re.subn(count_pattern, lambda m: m.group(1) + f"{len(rows)} works" + m.group(2), html, count=1, flags=re.S)
+    if n != 1:
+        raise ValueError("Missing total publications counter")
 
     if html.count('<article class="publication">') != len(rows):
         raise ValueError("HTML rendering lost publication entries")
@@ -128,12 +114,12 @@ def build(output_dir: Path) -> None:
              p.get("data_url") or p.get("full_text_url") or p.get("related_url"))
         for p in rows
     ):
-        raise ValueError("HTML rendering lost link groups")
+        raise ValueError("HTML rendering lost citation link groups")
 
     output_dir.mkdir(parents=True, exist_ok=True)
     (output_dir / "index.html").write_text(html, encoding="utf-8")
-    print(f"Rendered {len(reviewed)} under-review manuscripts and "
-          f"{len(published)} published works to {output_dir / 'index.html'}")
+    n_review = sum(p.get("status", "").strip() == "under_review" for p in rows)
+    print(f"Rendered {len(rows)} entries (including {n_review} under review) to {output_dir / 'index.html'}")
 
 
 if __name__ == "__main__":

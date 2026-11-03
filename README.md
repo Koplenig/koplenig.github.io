@@ -37,7 +37,7 @@ CSV columns:
 
 ## Initial curation
 
-The initial live CSV contains **70 works** (66 in Publications and four in **Under Review**) curated from the original **77 IDS records** (as fetched on 3 November 2026). We kept independently citable chapters, software/resources, and other distinct outputs. Seven variant entries were consolidated into their primary versions:
+The live CSV contains **71 works** (66 dated publications and five **Under Review** manuscripts), including an additional 2026 manuscript entered manually, based on an initial curated set of 70 from the original **77 IDS records** (fetched on 3 November 2026). We kept independently citable chapters, software/resources, and other distinct outputs. Seven variant entries were consolidated into their primary versions:
 
 - 2024 preprint of *Does corpus size influence normalised frequencies?* → 2025 journal article (preprint link retained).
 - 2024 arXiv version of *Less than one percent of words would be affected by gender-inclusive language in German press texts* → 2024 journal article (preprint link retained).
@@ -78,6 +78,6 @@ A ChatGPT reminder is set for the **first Tuesday of every month** (Europe/Berli
 
 ## Under Review section
 
-To keep a manuscript in the **Under Review** section, set its `status` column to `under_review`. Once published, clear the status, change the year/venue/DOI as needed, and place it within the descending-year order in the CSV.
+To show a manuscript in **Under Review**, the first year-like group under the **Publications** heading, set its `status` column to `under_review`. Once published, clear the status, change the year/venue/DOI as needed, and place it within the descending-year order in the CSV.
 
 The homepage is generated as static HTML: all DOI, preprint, data and full-text links remain visible without JavaScript. The deployment action checks that every DOI and preprint link from the CSV appears in the HTML.
