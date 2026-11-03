@@ -24,5 +24,23 @@ jobs:
         run: python3 scripts/validate_publications.py
       - name: Check site JavaScript syntax
         run: node --check assets/site.js
+      - name: Render and verify publication links
+        run: |
+          python3 scripts/render_publications.py _site
+          python3 - <<'PY'
+          import csv
+          from pathlib import Path
+          with open("data/publications_manual.csv", encoding="utf-8-sig", newline="") as f:
+              rows = list(csv.DictReader(f))
+          page = Path("_site/index.html").read_text(encoding="utf-8")
+          reviewed = [p for p in rows if p.get("status") == "under_review"]
+          assert len(rows) == page.count('<article class="publication">')
+          assert page.count('>DOI ↗</a>') == sum(bool(p.get("doi")) for p in rows)
+          assert page.count('>Preprint ↗</a>') == sum(bool(p.get("preprint_url")) for p in rows)
+          assert page.count('<!-- BEGIN_GENERATED_UNDER_REVIEW -->') == 1
+          assert page.split('<!-- BEGIN_GENERATED_UNDER_REVIEW -->')[1].split('<!-- END_GENERATED_UNDER_REVIEW -->')[0].count('<article class="publication">') == len(reviewed)
+          assert page.index('id="under-review-title"') < page.index('id="pub-title"')
+          print("PASS", len(rows), "records;", len(reviewed), "under review")
+          PY
       - name: Confirm original IDS snapshot remains available
         run: test -s data/publications_ids.csv
