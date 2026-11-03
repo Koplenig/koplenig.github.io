@@ -37,9 +37,12 @@ jobs:
           assert len(rows) == page.count('<article class="publication">')
           assert page.count('>DOI ↗</a>') == sum(bool(p.get("doi")) for p in rows)
           assert page.count('>Preprint ↗</a>') == sum(bool(p.get("preprint_url")) for p in rows)
-          assert page.count('<!-- BEGIN_GENERATED_UNDER_REVIEW -->') == 1
-          assert page.split('<!-- BEGIN_GENERATED_UNDER_REVIEW -->')[1].split('<!-- END_GENERATED_UNDER_REVIEW -->')[0].count('<article class="publication">') == len(reviewed)
-          assert page.index('id="under-review-title"') < page.index('id="pub-title"')
+          review_mark = '<section class="year-group review-year-group" aria-label="Under Review">'
+          assert page.count(review_mark) == 1
+          review_section = page.split(review_mark, 1)[1].split('</div></section>', 1)[0]
+          assert review_section.count('<article class="publication">') == len(reviewed)
+          assert page.index('<h2 id="pub-title">Publications</h2>') < page.index('<h3>Under Review</h3>') < page.index('aria-label="Publications from 2026"')
+          assert 'The model-selection results do not support the conclusions drawn from them' in review_section
           print("PASS", len(rows), "records;", len(reviewed), "under review")
           PY
       - name: Confirm original IDS snapshot remains available
