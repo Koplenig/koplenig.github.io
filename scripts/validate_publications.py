@@ -8,7 +8,7 @@ from urllib.parse import urlsplit
 
 ROOT=Path(__file__).resolve().parents[1]
 CSV=ROOT/"data/publications_manual.csv"
-REQUIRED=["year","authors","title","publication_details","doi","publication_url","preprint_url","data_url","related_url","related_label","full_text_url"]
+REQUIRED=["year","authors","title","publication_details","doi","publication_url","preprint_url","data_url","related_url","related_label","full_text_url","status"]
 URL_COLUMNS=["publication_url","preprint_url","data_url","related_url","full_text_url"]
 
 
@@ -28,6 +28,8 @@ def main():
         year=int(row["year"])
         if year<1900 or year>2100:
             raise ValueError(f"Line {n}: implausible publication year {year}")
+        if row.get("status", "").strip() not in ("", "under_review"):
+            raise ValueError(f"Line {n}: status must be blank or under_review")
         years.append(year)
         doi=row["doi"].strip().lower()
         if doi:

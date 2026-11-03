@@ -21,6 +21,7 @@ CSV columns:
 | Column | Description |
 | --- | --- |
 | `year` | Four-digit publication year (required) |
+| `status` | Leave blank for the year-by-year Publications list, or use `under_review` to show an entry at the beginning of the page. |
 | `authors` | Full author names separated by semicolons (required) |
 | `title` | Publication title (required) |
 | `publication_details` | Journal, book, publisher, volume, pages, etc. |
@@ -36,7 +37,7 @@ CSV columns:
 
 ## Initial curation
 
-The initial live CSV contains **70 works** curated from the original **77 IDS records** (as fetched on 3 November 2026). We kept independently citable chapters, software/resources, and other distinct outputs. Seven variant entries were consolidated into their primary versions:
+The initial live CSV contains **70 works** (66 in Publications and four in **Under Review**) curated from the original **77 IDS records** (as fetched on 3 November 2026). We kept independently citable chapters, software/resources, and other distinct outputs. Seven variant entries were consolidated into their primary versions:
 
 - 2024 preprint of *Does corpus size influence normalised frequencies?* → 2025 journal article (preprint link retained).
 - 2024 arXiv version of *Less than one percent of words would be affected by gender-inclusive language in German press texts* → 2024 journal article (preprint link retained).
@@ -74,3 +75,9 @@ Open http://localhost:8000. The generated publication list does not require Java
 ## Publication updates reminder
 
 A ChatGPT reminder is set for the **first Tuesday of every month** (Europe/Berlin), beginning 1 December 2026, to review and manually update the publications.
+
+## Under Review section
+
+To keep a manuscript in the **Under Review** section, set its `status` column to `under_review`. Once published, clear the status, change the year/venue/DOI as needed, and place it within the descending-year order in the CSV.
+
+The homepage is generated as static HTML: all DOI, preprint, data and full-text links remain visible without JavaScript. The deployment action checks that every DOI and preprint link from the CSV appears in the HTML.
