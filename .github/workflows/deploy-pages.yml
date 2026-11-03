@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -26,7 +26,19 @@ jobs:
       - name: Validate manual publication CSV
         run: python3 scripts/validate_publications.py
       - name: Render HTML bibliography from manual CSV
-        run: python3 scripts/render_publications.py _site
+        run: |
+          python3 scripts/render_publications.py .
+          mkdir -p _site
+          cp index.html _site/index.html
+      - name: Keep GitHub index.html synchronized with manual CSV
+        run: |
+          if ! git diff --quiet -- index.html; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add index.html
+            git commit -m "chore: regenerate publication HTML from CSV [skip ci]"
+            git push
+          fi
       - name: Prepare static website
         run: |
           mkdir -p _site/assets _site/data
