@@ -27,6 +27,13 @@ button, input { font: inherit; }
 .portrait { grid-column: 2; grid-row: 1 / span 2; align-self: start; margin: 30px 0 0; width: 238px; max-width: 100%; height: auto; overflow: visible; border-radius: 4px; background: #e6e1d7; box-shadow: 0 1px 10px rgba(0,0,0,.055); }
 .portrait img { display: block; width: 100%; height: auto; max-height: none; object-fit: contain; object-position: center; aspect-ratio: auto; }
 .bibliography { padding: 30px 0 80px; }
+.under-review-heading { margin-bottom: 20px; }
+#under-review-list { border-top: 1px solid var(--line); padding-top: 24px; }
+.under-review-group .publication { padding-bottom: 23px; }
+.under-review-group .publication + .publication { padding-top: 23px; }
+.published-heading { padding-top: 30px; margin-top: 13px; border-top: 1px solid var(--line); margin-bottom: 26px; }
+#publication-list .year-group:first-child { margin-top: 0; }
+
 .section-title-row { display: flex; align-items: baseline; flex-wrap: wrap; gap: 12px 24px; }
 h2 { margin: 0; font-size: 31px; font-weight: 620; letter-spacing: -.75px; line-height: 1.25; }
 .publication-count { font-size: 13px; color: var(--muted); }
@@ -44,9 +51,9 @@ h2 { margin: 0; font-size: 31px; font-weight: 620; letter-spacing: -.75px; line-
 .pub-title a { color: var(--ink); text-decoration: none; }
 .pub-title a:hover { color: var(--accent); text-decoration: underline; }
 .pub-details { font-size: 13px; line-height: 1.55; color: var(--muted); margin: 0 0 9px; }
-.pub-links { display: flex; flex-wrap: wrap; gap: 8px 18px; }
-.pub-links a { font-size: 12px; font-weight: 600; text-decoration: none; }
-.pub-links a:hover { text-decoration: underline; }
+.pub-links { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 11px; }
+.pub-links a { display: inline-flex; align-items: center; padding: 3px 9px; border: 1px solid #cbded0; border-radius: 4px; background: #edf4ee; color: var(--accent); font-size: 12px; font-weight: 650; text-decoration: none; }
+.pub-links a:hover { text-decoration: underline; background: #e1eee4; }
 .loading-state, .empty-state { padding: 22px 0; font-size: 14px; color: var(--muted); }
 footer { border-top: 1px solid var(--line); padding: 27px 0 40px; color: var(--muted); font-size: 12px; }
 footer p { margin: 0; }
