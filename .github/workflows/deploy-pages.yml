@@ -39,12 +39,23 @@ jobs:
           import csv
           from pathlib import Path
           with open("data/publications_manual.csv", encoding="utf-8-sig", newline="") as f:
-              count = len(list(csv.DictReader(f)))
+              csv_rows = list(csv.DictReader(f))
+              count = len(csv_rows)
           page = Path("_site/index.html").read_text(encoding="utf-8")
           assert page.count('<article class="publication">') == count, (count, page.count('<article class="publication">'))
           assert "Loading publications" not in page
           assert 'href="https://orcid.org/0000-0002-9630-9680"' in page
-          print("Static HTML publications verified:", count)
+          reviews = [r for r in csv_rows if r.get("status", "").strip() == "under_review"]
+          dois = sum(bool(r.get("doi", "").strip()) for r in csv_rows)
+          preprints = sum(bool(r.get("preprint_url", "").strip()) for r in csv_rows)
+          assert page.count('>DOI ↗</a>') == dois, "DOI links missing"
+          assert page.count('>Preprint ↗</a>') == preprints, "Preprint links missing"
+          assert '<h2 id="under-review-title">Under Review</h2>' in page
+          assert page.index('id="under-review-title"') < page.index('id="pub-title"')
+          review_section = page.split("<!-- BEGIN_GENERATED_UNDER_REVIEW -->", 1)[1].split("<!-- END_GENERATED_UNDER_REVIEW -->", 1)[0]
+          assert review_section.count('<article class="publication">') == len(reviews)
+          assert len(reviews) >= 1
+          print("Static HTML verified:", count, "works,", len(reviews), "under review,", dois, "DOIs,", preprints, "preprint links")
           PY
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
