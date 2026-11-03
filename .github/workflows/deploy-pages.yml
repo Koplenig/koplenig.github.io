@@ -50,11 +50,13 @@ jobs:
           preprints = sum(bool(r.get("preprint_url", "").strip()) for r in csv_rows)
           assert page.count('>DOI ↗</a>') == dois, "DOI links missing"
           assert page.count('>Preprint ↗</a>') == preprints, "Preprint links missing"
-          assert '<h2 id="under-review-title">Under Review</h2>' in page
-          assert page.index('id="under-review-title"') < page.index('id="pub-title"')
-          review_section = page.split("<!-- BEGIN_GENERATED_UNDER_REVIEW -->", 1)[1].split("<!-- END_GENERATED_UNDER_REVIEW -->", 1)[0]
+          review_mark = '<section class="year-group review-year-group" aria-label="Under Review">'
+          assert page.count(review_mark) == 1
+          assert page.index('<h2 id="pub-title">Publications</h2>') < page.index('<h3>Under Review</h3>') < page.index('aria-label="Publications from 2026"')
+          review_section = page.split(review_mark, 1)[1].split('</div></section>', 1)[0]
           assert review_section.count('<article class="publication">') == len(reviews)
-          assert len(reviews) >= 1
+          assert len(reviews) == 5
+          assert 'The model-selection results do not support the conclusions drawn from them' in review_section
           print("Static HTML verified:", count, "works,", len(reviews), "under review,", dois, "DOIs,", preprints, "preprint links")
           PY
       - name: Configure GitHub Pages
