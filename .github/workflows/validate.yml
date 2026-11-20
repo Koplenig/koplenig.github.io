@@ -70,5 +70,32 @@ jobs:
           assert 'event.pointerType !== "mouse"' in js
           print("PASS: static full image, localized wave, keyboard/touch and reduced motion")
           PY
+      - name: Verify three-column green institutional links
+        run: |
+          python3 - <<'PY'
+          from html.parser import HTMLParser
+          from pathlib import Path
+          import re
+
+          html = Path("index.html").read_text(encoding="utf-8")
+          css = Path("assets/style.css").read_text(encoding="utf-8")
+          assert html.count('class="profile-link"') == 3
+          for url in ("https://orcid.org/0000-0002-9630-9680",
+                      "https://github.com/Koplenig",
+                      "https://perso.ids-mannheim.de/seiten/koplenig.html"):
+              assert html.count('href="' + url + '"') == 1
+          assert 'class="profile-links" aria-label="Research profiles"' in html
+          assert 'viewBox="80 85 160 160"' in html
+          assert '<g fill="#ffffff">' in html
+          assert html.count('fill="currentColor"') >= 3
+          assert '#1f5f78' not in html
+          assert '.profile-links { grid-column: 1; grid-row: 2; display: grid;' in css
+          assert 'grid-template-columns: repeat(3, minmax(0, 1fr))' in css
+          assert '.profile-link-icon' in css and 'color: var(--accent);' in css
+          assert 'id="waving-portrait"' in html
+          assert 'class="portrait-wave-layer"' in html
+          assert html.count('<article class="publication">') >= 71
+          print("PASS: official IDS logo, green icons, 3-column links, original portrait")
+          PY
       - name: Confirm original IDS snapshot remains available
         run: test -s data/publications_ids.csv
