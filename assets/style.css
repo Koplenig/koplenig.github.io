@@ -25,11 +25,11 @@ button, input { font: inherit; }
 .about p { font-size: 17px; line-height: 1.65; margin: 0 0 17px; }
 .field-name { font-weight: 610; }
 .profile-links { grid-column: 1; grid-row: 2; display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, .95fr) minmax(0, 1.5fr); align-items: start; column-gap: 12px; margin-top: 20px; }
-.profile-link { display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; padding: 2px 0; color: var(--accent); font-size: 16px; font-weight: 600; line-height: 1.35; text-decoration: none; }
+.profile-link { display: inline-flex; align-items: center; gap: 8px; min-width: 0; max-width: 100%; padding: 2px 0; color: #9f2241; font-size: 16px; font-weight: 600; line-height: 1.35; text-decoration: none; }
 .profile-link-label { text-underline-offset: 3px; overflow-wrap: break-word; }
 .profile-link:hover .profile-link-label { text-decoration: underline; }
 .profile-link:focus-visible { border-radius: 3px; }
-.profile-link-icon { display: inline-flex; flex: 0 0 28px; width: 28px; height: 28px; align-items: center; justify-content: center; color: var(--accent); }
+.profile-link-icon { display: inline-flex; flex: 0 0 28px; width: 28px; height: 28px; align-items: center; justify-content: center; color: #9f2241; }
 .profile-link-icon svg { display: block; width: 28px; height: 28px; }
 .portrait { grid-column: 2; grid-row: 1 / span 3; align-self: start; margin: 30px 0 0; width: 238px; max-width: 100%; height: auto; overflow: visible; border-radius: 4px; background: #e6e1d7; box-shadow: 0 1px 10px rgba(0,0,0,.055); }
 .portrait img { display: block; width: 100%; height: auto; max-height: none; object-fit: contain; object-position: center; aspect-ratio: auto; }
