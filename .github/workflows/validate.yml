@@ -45,5 +45,30 @@ jobs:
           assert 'The model-selection results do not support the conclusions drawn from them' in review_section
           print("PASS", len(rows), "records;", len(reviewed), "under review")
           PY
+      - name: Check hand-only wave and original photograph
+        run: |
+          python3 - <<'PY'
+          import base64
+          import re
+          from pathlib import Path
+          html = Path("index.html").read_text(encoding="utf-8")
+          css = Path("assets/style.css").read_text(encoding="utf-8")
+          js = Path("assets/site.js").read_text(encoding="utf-8")
+          assert 'src="assets/profile-full.jpg?v=20261103"' in html
+          assert html.count('class="portrait-wave-layer"') == 1
+          assert 'viewBox="0 0 432 768"' in html
+          assert '<g class="portrait-wave-hand">' in html
+          assert 'id="waving-portrait"' in html
+          sprites = re.findall(r'data:image/webp;base64,([A-Za-z0-9+/=]+)', html)
+          assert len(sprites) == 2, "Expected transparent hand and retouch patches"
+          for sprite in sprites:
+              decoded = base64.b64decode(sprite, validate=True)
+              assert decoded[:4] == b"RIFF" and decoded[8:12] == b"WEBP"
+          assert '.portrait--wave:hover .portrait-wave-hand' in css
+          assert '.portrait--wave:focus-visible .portrait-wave-hand' in css
+          assert 'prefers-reduced-motion: reduce' in css
+          assert 'event.pointerType !== "mouse"' in js
+          print("PASS: static full image, localized wave, keyboard/touch and reduced motion")
+          PY
       - name: Confirm original IDS snapshot remains available
         run: test -s data/publications_ids.csv

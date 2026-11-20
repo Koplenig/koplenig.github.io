@@ -32,3 +32,24 @@
     input.focus();
   });
 })();
+
+/* Keyboard and touch activation; on desktop the wave runs only while hovering. */
+(() => {
+  const portrait = document.getElementById("waving-portrait");
+  if (!portrait) return;
+
+  const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const toggle = () => {
+    if (!reducedMotion.matches) portrait.classList.toggle("is-waving");
+  };
+  portrait.addEventListener("pointerup", (event) => {
+    if (event.pointerType !== "mouse") toggle();
+  });
+  portrait.addEventListener("keydown", (event) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      toggle();
+    }
+  });
+  portrait.addEventListener("blur", () => portrait.classList.remove("is-waving"));
+})();
