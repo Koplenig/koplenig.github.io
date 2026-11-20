@@ -30,6 +30,46 @@ button, input { font: inherit; }
 .profile-links-separator { color: var(--muted); font-weight: 500; }
 .portrait { grid-column: 2; grid-row: 1 / span 2; align-self: start; margin: 30px 0 0; width: 238px; max-width: 100%; height: auto; overflow: visible; border-radius: 4px; background: #e6e1d7; box-shadow: 0 1px 10px rgba(0,0,0,.055); }
 .portrait img { display: block; width: 100%; height: auto; max-height: none; object-fit: contain; object-position: center; aspect-ratio: auto; }
+
+/* Hover Easter egg: the original photograph is never moved. Only a tiny
+   transparent patch around the raised hand animates above it. */
+.portrait--wave { position: relative; isolation: isolate; cursor: pointer; }
+.portrait--wave:focus-visible { outline: 3px solid #8cae9e; outline-offset: 4px; }
+.portrait-wave-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 0;
+  pointer-events: none;
+  overflow: visible;
+}
+.portrait-wave-hand {
+  transform-box: view-box;
+  transform-origin: 115px 204px;
+}
+.portrait--wave:hover .portrait-wave-layer,
+.portrait--wave:focus-visible .portrait-wave-layer,
+.portrait--wave.is-waving .portrait-wave-layer { opacity: 1; }
+.portrait--wave:hover .portrait-wave-hand,
+.portrait--wave:focus-visible .portrait-wave-hand,
+.portrait--wave.is-waving .portrait-wave-hand {
+  animation: photo-hand-wave 1.55s ease-in-out infinite;
+}
+@keyframes photo-hand-wave {
+  0%, 100% { transform: rotate(0deg); }
+  15% { transform: rotate(12deg); }
+  30% { transform: rotate(-8deg); }
+  48% { transform: rotate(11deg); }
+  65% { transform: rotate(-6deg); }
+  80% { transform: rotate(9deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .portrait-wave-layer { display: none !important; }
+  .portrait-wave-hand { animation: none !important; }
+}
+
 .bibliography { padding: 30px 0 80px; }
 
 .section-title-row { display: flex; align-items: baseline; flex-wrap: wrap; gap: 12px 24px; }
